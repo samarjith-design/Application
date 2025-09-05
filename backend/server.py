@@ -596,12 +596,12 @@ async def get_dashboard_data(user_id: str):
         insights = await db.career_insights.find({"user_id": user_id}).sort("created_at", -1).limit(5).to_list(5)
         
         # Calculate stats
-        active_goals = len([g for g in goals if g["status"] == "active"])
-        completed_goals = len([g for g in goals if g["status"] == "completed"])
-        avg_progress = sum([g["progress"] for g in goals]) / len(goals) if goals else 0
+        active_goals = len([g for g in goals if g.get("status", "active") == "active"])
+        completed_goals = len([g for g in goals if g.get("status", "active") == "completed"])
+        avg_progress = sum([g.get("progress", 0) for g in goals]) / len(goals) if goals else 0
         
-        upcoming_sessions = [s for s in sessions if s["scheduled_time"] > datetime.utcnow() and s["status"] == "scheduled"]
-        completed_sessions = [s for s in sessions if s["status"] == "completed"]
+        upcoming_sessions = [s for s in sessions if s.get("scheduled_time", datetime.utcnow()) > datetime.utcnow() and s.get("status", "scheduled") == "scheduled"]
+        completed_sessions = [s for s in sessions if s.get("status", "scheduled") == "completed"]
         
         return {
             "profile": clean_mongo_doc(profile),
