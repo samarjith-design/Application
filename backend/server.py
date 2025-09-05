@@ -386,7 +386,8 @@ async def get_profiles():
     """Get all user profiles"""
     try:
         profiles = await db.user_profiles.find().to_list(1000)
-        return [UserProfile(**profile) for profile in profiles]
+        cleaned_profiles = clean_mongo_list(profiles)
+        return [UserProfile(**profile) for profile in cleaned_profiles]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching profiles: {str(e)}")
 
