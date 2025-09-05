@@ -545,7 +545,7 @@ async def get_career_insights(user_id: str):
         }).to_list(100)
         
         if existing_insights:
-            return {"insights": existing_insights}
+            return {"insights": clean_mongo_list(existing_insights)}
         
         # Generate new insights
         ai_insights = await generate_career_insights_ai(profile)
@@ -560,7 +560,7 @@ async def get_career_insights(user_id: str):
                 **insight_data
             }
             await db.career_insights.insert_one(insight)
-            insights.append(insight)
+            insights.append(clean_mongo_doc(insight))
         
         return {"insights": insights}
     except HTTPException:
