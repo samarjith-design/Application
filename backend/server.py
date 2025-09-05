@@ -122,6 +122,25 @@ class CareerInsight(BaseModel):
     confidence_score: float
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+# Helper Functions
+def clean_mongo_doc(doc):
+    """Remove MongoDB ObjectId fields from documents"""
+    if isinstance(doc, dict):
+        # Remove _id field if it exists
+        if '_id' in doc:
+            del doc['_id']
+        # Recursively clean nested documents
+        for key, value in doc.items():
+            if isinstance(value, dict):
+                doc[key] = clean_mongo_doc(value)
+            elif isinstance(value, list):
+                doc[key] = [clean_mongo_doc(item) if isinstance(item, dict) else item for item in value]
+    return doc
+
+def clean_mongo_list(docs):
+    """Clean a list of MongoDB documents"""
+    return [clean_mongo_doc(doc) for doc in docs]
+
 # AI Helper Functions
 async def get_ai_chat():
     """Initialize AI chat with system message"""
