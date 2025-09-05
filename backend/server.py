@@ -603,7 +603,7 @@ async def get_dashboard_data(user_id: str):
         completed_sessions = [s for s in sessions if s["status"] == "completed"]
         
         return {
-            "profile": profile,
+            "profile": clean_mongo_doc(profile),
             "stats": {
                 "active_goals": active_goals,
                 "completed_goals": completed_goals,
@@ -612,10 +612,10 @@ async def get_dashboard_data(user_id: str):
                 "upcoming_sessions": len(upcoming_sessions),
                 "completed_sessions": len(completed_sessions)
             },
-            "recent_goals": goals[:5],
-            "recent_matches": matches[:5],
-            "upcoming_sessions": upcoming_sessions[:3],
-            "recent_insights": insights
+            "recent_goals": clean_mongo_list(goals[:5]),
+            "recent_matches": clean_mongo_list(matches[:5]),
+            "upcoming_sessions": clean_mongo_list(upcoming_sessions[:3]),
+            "recent_insights": clean_mongo_list(insights)
         }
     except HTTPException:
         raise
